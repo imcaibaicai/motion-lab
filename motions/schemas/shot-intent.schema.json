@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.dsh/motions/schemas/shot-intent.schema.json",
+  "title": "Shot Intent (cross-stack)",
+  "description": "动效条目的机器可读意图。只描述 what（可观测量），不描述 how（语法/框架）。任何字段都必须能通过三问：换 fps 还成立吗、换画幅还成立吗、换渲染器还成立吗。",
+  "type": "object",
+  "required": ["id", "title", "status", "determinism", "motion"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "description": "slug，全小写连字符，与目录名一致"
+    },
+    "title": { "type": "string", "description": "中文名，人读用" },
+    "status": {
+      "enum": ["ready", "spec-only", "reference"],
+      "description": "ready=有可运行参考实现且过了 lint+verify；spec-only=只有说明书待实现；reference=只有参考素材待研究"
+    },
+    "stack": {
+      "type": "array",
+      "items": { "enum": ["multiplane", "remotion", "vanilla"] },
+      "uniqueItems": true,
+      "description": "存在哪些参考实现。空数组=尚未实现"
+    },
+    "determinism": {
+      "type": "object",
+      "required": ["kind"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": ["closed-form", "precomputed-simulation"],
+          "description": "closed-form=画面是 t 的闭式函数，可直接跨栈；precomputed-simulation=依赖弹簧/粒子等状态累加，跨栈时必须先预算成表，成本高一档"
+        },
+        "note": { "type": "string" }
+      }
+    },
+    "visualRole": {
+      "enum": ["overlay", "transition", "chapter", "end-card", "explainer", "ambient"],
+      "description": "在叙事里的角色。刻意不含 a-roll / b-roll-pip，那些是实拍包装概念，纯代码动效用不上"
+    },
+    "motion": {
+      "type": "object",
+      "required": ["easingFamily"],
+      "additionalProperties": false,
+      "properties": {
+        "easingFamily": {
+          "enum": ["snappy", "smooth", "elastic", "mask", "linear", "none"],
+          "description": "缓动族名，不是 cubic-bezier 具体数值——具体值属于实现细节，写死就等于锁死视觉"
+        },
+        "entryRatio": {
+          "type": "number", "minimum": 0, "maximum": 1,
+          "description": "入场占全片时长的比例。用比例而不是帧数，才能跨 fps"
+        },
+        "exitRatio": {
+          "type": "number", "minimum": 0, "maximum": 1
+        },
+        "staggerRatio": {
+          "type": "number", "minimum": 0, "maximum": 1,
+          "description": "多元素错峰的间隔，占全片时长的比例"
+        }
+      }
+    },
+    "observables": {
+      "type": "array",
+      "description": "关键帧观测量表。位置一律用相对舞台宽高的比例，不写像素",
+      "items": {
+        "type": "object",
+        "required": ["atRatio"],
+        "additionalProperties": false,
+        "properties": {
+          "atRatio": { "type": "number", "minimum": 0, "maximum": 1 },
+          "element": { "type": "string" },
+          "xRel": { "type": "number" },
+          "yRel": { "type": "number" },
+          "scale": { "type": "number", "exclusiveMinimum": 0 },
+          "opacity": { "type": "number", "minimum": 0, "maximum": 1 }
+        }
+      }
+    },
+    "tolerance": {
+      "type": "object",
+      "description": "验收容差。参考视频反向实现时必须放宽，因为压缩噪声与水印不可控",
+      "additionalProperties": false,
+      "properties": {
+        "geometryRel": { "type": "number", "minimum": 0, "description": "相对舞台宽高的允许偏差，如 0.015 表示 1.5%" },
+        "timeFrames": { "type": "integer", "minimum": 0 },
+        "opacityAbs": { "type": "number", "minimum": 0 }
+      }
+    },
+    "parameters": {
+      "type": "object",
+      "description": "真正该被参数化的东西。不要放装饰性细节",
+      "additionalProperties": true,
+      "properties": {}
+    },
+    "implementation": {
+      "type": "object",
+      "description": "参考实现入口。这是唯一允许绑定具体技术栈的地方，跨栈时只替换这一块",
+      "additionalProperties": false,
+      "properties": {
+        "runtime": { "enum": ["multiplane", "remotion", "vanilla"] },
+        "entry": { "type": "string", "description": "相对条目目录的路径" }
+      }
+    },
+    "license": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "redistribute": {
+          "type": "boolean",
+          "description": "false 时公开导出脚本会跳过本条目"
+        },
+        "spdx": { "type": "string" },
+        "attribution": { "type": "string" }
+      }
+    },
+    "tags": { "type": "array", "items": { "type": "string" } }
+  }
+}

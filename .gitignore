@@ -1,0 +1,29 @@
+# 渲染产物与依赖
+out/
+node_modules/
+.jobs/
+frames/
+*.log
+
+# 参考素材：按工作区红线，参考视频与截图不进仓库
+**/reference-*.mp4
+**/reference-*.png
+**/ref-video/
+**/ref-shot/
+
+# 草稿渲染
+**/*.draft.mp4
+**/draft-*
+
+# 编辑器
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# ��֤��ͼ���������ɣ�
+**/shots/
+
+
+# 本地私有：含本机路径/未经脱敏的原始笔记，绝不进公开仓库
+_private/

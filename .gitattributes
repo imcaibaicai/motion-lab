@@ -1,0 +1,9 @@
+# 统一换行符：文档与源码一律 LF，避免 Windows 端提交把整仓标成改动
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.mp4 binary
+*.woff2 binary
+
+*.ps1 text eol=crlf

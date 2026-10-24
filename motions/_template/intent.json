@@ -1,0 +1,43 @@
+{
+  "id": "example-effect",
+  "title": "示例效果（复制本文件后改名）",
+  "status": "spec-only",
+  "stack": [],
+  "determinism": {
+    "kind": "closed-form",
+    "note": "画面是 t 的闭式函数，无状态累加，可直接跨栈"
+  },
+  "visualRole": "overlay",
+  "motion": {
+    "easingFamily": "smooth",
+    "entryRatio": 0.08,
+    "exitRatio": 0.05,
+    "staggerRatio": 0.03
+  },
+  "observables": [
+    { "atRatio": 0, "element": "all", "xRel": 0.5, "yRel": 0.58, "scale": 1, "opacity": 0 },
+    { "atRatio": 0.08, "element": "item-1", "xRel": 0.5, "yRel": 0.5, "scale": 1, "opacity": 1 },
+    { "atRatio": 1, "element": "all", "xRel": 0.5, "yRel": 0.5, "scale": 1, "opacity": 1 }
+  ],
+  "tolerance": {
+    "geometryRel": 0.015,
+    "timeFrames": 2,
+    "opacityAbs": 0.05
+  },
+  "parameters": {
+    "text": "文案",
+    "aspectRatio": "16:9",
+    "durationSeconds": 4,
+    "colorSemantic": { "primary": "品牌主色" }
+  },
+  "implementation": {
+    "runtime": "multiplane",
+    "entry": "ref/shot.html"
+  },
+  "license": {
+    "redistribute": true,
+    "spdx": "MIT",
+    "attribution": "自制"
+  },
+  "tags": ["typography", "entrance", "stagger"]
+}

@@ -1,0 +1,40 @@
+{
+  "$comment": "缓动的唯一真源。网页与视频都读这一份。族名对外的接口是族名本身，具体曲线是内部实现，允许微调。",
+  "version": 1,
+  "families": {
+    "snappy": {
+      "bezier": [0.2, 0, 0, 1],
+      "webDurationMs": 180,
+      "note": "快进慢出，收得干脆。UI 反馈与切换的首选"
+    },
+    "smooth": {
+      "bezier": [0.4, 0, 0.2, 1],
+      "webDurationMs": 320,
+      "note": "对称缓入缓出。位移、淡入淡出、镜头推拉的默认值"
+    },
+    "elastic": {
+      "bezier": [0.34, 1.56, 0.64, 1],
+      "webDurationMs": 420,
+      "note": "过冲回弹。慎用，滥用会显得廉价"
+    },
+    "mask": {
+      "bezier": [0.65, 0, 0.35, 1],
+      "webDurationMs": 400,
+      "note": "遮罩式揭示。配合 clip-path 用，不做位移"
+    },
+    "linear": {
+      "bezier": [0, 0, 1, 1],
+      "webDurationMs": null,
+      "note": "匀速。进度、循环、时间轴指示"
+    },
+    "none": {
+      "bezier": null,
+      "webDurationMs": 0,
+      "note": "离散切换，无过渡。像素级重绘与步骤播放器专用"
+    }
+  },
+  "stagger": {
+    "defaultStepRatio": 0.03,
+    "note": "视频里用占全片时长的比例；网页里换算成毫秒。禁止用全局累加计数器实现"
+  }
+}

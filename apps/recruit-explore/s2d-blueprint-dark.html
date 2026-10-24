@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S2d · 暗底蓝图 — 台式机爆炸拆解</title>
+<style>
+  :root{
+    --bg:#06080f;
+    --ink:#dbe4f7;
+    --mute:#78859f;
+    --grid:#141b29;
+    --accent:#ff7a45;
+    --p:0;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{background:var(--bg);color:var(--ink);
+    font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:
+      repeating-linear-gradient(0deg,var(--grid) 0 1px,transparent 1px 42px),
+      repeating-linear-gradient(90deg,var(--grid) 0 1px,transparent 1px 42px);
+    opacity:.75;
+    -webkit-mask-image:radial-gradient(ellipse at 62% 46%,#000 24%,transparent 74%);
+            mask-image:radial-gradient(ellipse at 62% 46%,#000 24%,transparent 74%);
+  }
+  body::after{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:radial-gradient(ellipse 46% 40% at 62% 48%, rgba(48,74,150,.22), transparent 70%);
+  }
+  .scroll{height:320vh}
+  .stage{position:sticky;top:0;height:100vh;overflow:hidden;z-index:1}
+
+  .copy{position:absolute;left:5vw;top:33%;max-width:17ch;z-index:3}
+  .eyebrow{font:500 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.34em;
+    text-transform:uppercase;color:var(--mute);margin-bottom:20px}
+  .eyebrow b{color:var(--accent)}
+  h1{font-size:clamp(30px,3.9vw,52px);line-height:1.06;letter-spacing:-.03em;font-weight:800;
+    background:linear-gradient(180deg,#ffffff 0%,#9fb4ff 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  .lead{margin-top:18px;font-size:13px;line-height:1.95;color:#8d9ab8}
+  .ticks{margin-top:24px;display:flex;flex-direction:column;gap:9px;
+    font:500 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.14em;color:var(--mute)}
+  .ticks i{display:inline-block;width:20px;height:1px;background:var(--accent);
+    vertical-align:middle;margin-right:10px;opacity:.8}
+
+  .figure{position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:flex-end}
+  svg{width:min(72vw,1040px);height:auto;overflow:visible;transform:translateX(3vw)}
+
+  .frame-dim{fill:none;stroke:#2a3550;stroke-width:1.2;stroke-dasharray:5 7}
+  .ghost-dim{fill:none;stroke:#2f3b58;stroke-width:1.4}
+  .plate{fill:rgba(10,14,24,.94);stroke:#c8d6f5;stroke-width:2.2;stroke-linejoin:round}
+  .plate-ghost{fill:rgba(120,150,220,.05);stroke:#9fb4de;stroke-width:1.5}
+  .line-ghost{fill:none;stroke:#7f92b8;stroke-width:1;opacity:.55}
+  .hot{fill:rgba(255,122,69,.10);stroke:var(--accent);stroke-width:2}
+  .tag{font:500 12px/1 ui-monospace,Consolas,monospace;fill:#e7edfb;letter-spacing:.12em}
+  .tag-s{font-size:10.5px;fill:#8494b5;letter-spacing:0;
+    font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif}
+
+  .hud{position:absolute;left:5vw;right:5vw;bottom:24px;z-index:4;
+    display:flex;align-items:center;gap:14px;
+    font:500 10.5px/1 ui-monospace,Consolas,monospace;letter-spacing:.2em;color:var(--mute)}
+  .bar{flex:1;height:1px;background:#182030;position:relative}
+  .bar i{position:absolute;left:0;top:-1px;height:3px;background:var(--accent);
+    width:calc(var(--p) * 100%);box-shadow:0 0 12px var(--accent)}
+  .hint{position:absolute;right:4vw;top:50%;transform:translateY(-50%) rotate(90deg);
+    font:500 10px/1 ui-monospace,monospace;letter-spacing:.36em;color:#3a465e;z-index:4}
+</style>
+</head>
+<body>
+<div class="scroll">
+<div class="stage">
+
+  <div class="copy">
+    <div class="eyebrow">SEC.02 &nbsp;/&nbsp; <b>图纸</b> BLUEPRINT</div>
+    <h1>每一件都有位置</h1>
+    <p class="lead">它怎么装，就决定了它为什么这么贵。</p>
+    <div class="ticks">
+      <span><i></i>装机实战</span>
+      <span><i></i>选购建议</span>
+      <span><i></i>存储涨价的应对</span>
+    </div>
+  </div>
+
+  <div class="figure">
+    <svg id="sc" viewBox="0 0 1240 800" aria-label="台式机爆炸拆解图纸">
+      <path class="frame-dim" d="M380 120 L760 120 L760 700 L380 700 Z"/>
+      <g class="ghost-dim">
+        <circle cx="742" cy="205" r="27"/>
+        <circle cx="742" cy="278" r="27"/>
+        <circle cx="742" cy="351" r="27"/>
+      </g>
+
+      <g class="part" id="mobo" data-dx="-238">
+        <rect class="plate-ghost" x="415" y="165" width="312" height="360" rx="4"/>
+        <circle class="line-ghost" cx="443" cy="193" r="5"/>
+        <circle class="line-ghost" cx="699" cy="193" r="5"/>
+        <circle class="line-ghost" cx="443" cy="497" r="5"/>
+        <circle class="line-ghost" cx="699" cy="497" r="5"/>
+        <rect class="line-ghost" x="492" y="232" width="104" height="104" rx="3"/>
+        <rect class="line-ghost" x="592" y="392" width="64" height="48" rx="3"/>
+        <path class="line-ghost" d="M452 468 L676 468 M452 486 L676 486"/>
+        <path class="line-ghost" d="M415 210 L742 210"/>
+        <text class="tag" x="418" y="150">主板 <tspan class="tag-s">ATX / B760</tspan></text>
+      </g>
+
+      <g class="part" id="cooler" data-dx="-150" data-dy="-104">
+        <rect class="hot" x="498" y="208" width="88" height="88" rx="3"/>
+        <path class="line-ghost" d="M508 224 L578 224 M508 240 L578 240 M508 256 L578 256
+          M508 272 L578 272 M508 288 L578 288"/>
+        <text class="tag" x="500" y="196">散热器 <tspan class="tag-s">双塔六热管</tspan></text>
+      </g>
+
+      <g class="part" id="ram" data-dx="-62" data-dy="-130">
+        <rect class="plate-ghost" x="644" y="214" width="16" height="150" rx="2"/>
+        <rect class="plate-ghost" x="670" y="214" width="16" height="150" rx="2"/>
+        <text class="tag" x="640" y="200">内存 <tspan class="tag-s">DDR5 双通道</tspan></text>
+      </g>
+
+      <g class="part" id="gpu" data-dx="-116" data-dy="130">
+        <rect class="plate-ghost" x="430" y="548" width="272" height="66" rx="3"/>
+        <circle class="line-ghost" cx="478" cy="581" r="20"/>
+        <circle class="line-ghost" cx="562" cy="581" r="20"/>
+        <circle class="line-ghost" cx="646" cy="581" r="20"/>
+        <text class="tag" x="432" y="640">显卡 <tspan class="tag-s">三风扇 2.5 槽</tspan></text>
+      </g>
+
+      <g class="part" id="psu" data-dx="-292" data-dy="60">
+        <rect class="plate-ghost" x="404" y="622" width="150" height="76" rx="3"/>
+        <circle class="line-ghost" cx="479" cy="660" r="22"/>
+        <text class="tag" x="406" y="612">电源 <tspan class="tag-s">750W 金牌</tspan></text>
+      </g>
+
+      <g class="part" id="panel" data-dx="372">
+        <rect class="plate" x="380" y="130" width="380" height="560" rx="10"/>
+        <path class="line-ghost" d="M386 140 L754 140"/>
+        <text class="tag" x="392" y="118">侧板 <tspan class="tag-s">钢化玻璃</tspan></text>
+      </g>
+    </svg>
+  </div>
+
+  <div class="hint">SCROLL</div>
+  <div class="hud">
+    <span id="pct">000%</span>
+    <span class="bar"><i></i></span>
+    <span>S2d / DARK BLUEPRINT</span>
+  </div>
+</div>
+</div>
+
+<script>
+(function(){
+  const root = document.documentElement;
+  const parts = [...document.querySelectorAll('.part')];
+  const pct = document.getElementById('pct');
+  const forced = new URLSearchParams(location.search).get('t');
+  let target = 0, cur = 0;
+
+  const easeInOutCubic = p => p < 0.5 ? 4*p*p*p : 1 - Math.pow(-2*p + 2, 3)/2;
+  const DELAY = { panel: 0.18 };
+
+  function setP(raw){
+    const e = easeInOutCubic(raw);
+    root.style.setProperty('--p', raw.toFixed(4));
+    pct.textContent = String(Math.round(raw*100)).padStart(3,'0') + '%';
+    for (const el of parts){
+      const d = DELAY[el.id] || 0;
+      const q = Math.max(0, Math.min(1, (e - d) / (1 - d)));
+      const ee = q*q*(3 - 2*q);
+      el.setAttribute('transform',
+        'translate(' + (parseFloat(el.dataset.dx || 0) * ee).toFixed(2) + ' ' +
+                       (parseFloat(el.dataset.dy || 0) * ee).toFixed(2) + ')');
+    }
+  }
+
+  if (forced !== null){
+    setP(Math.min(1, Math.max(0, parseFloat(forced) || 0)));
+    return;
+  }
+
+  function measure(){
+    const max = document.documentElement.scrollHeight - innerHeight;
+    target = max > 0 ? Math.min(1, Math.max(0, scrollY / max)) : 0;
+  }
+  addEventListener('scroll', measure, {passive:true});
+  addEventListener('resize', measure);
+  measure(); cur = target; setP(cur);
+
+  (function tick(){
+    cur += (target - cur) * 0.12;
+    if (Math.abs(target - cur) < 1e-4) cur = target;
+    setP(cur);
+    requestAnimationFrame(tick);
+  })();
+})();
+</script>
+</body>
+</html>

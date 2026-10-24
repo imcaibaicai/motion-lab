@@ -1,0 +1,19 @@
+文档许可：CC BY 4.0
+
+本仓库中所有 Markdown 文档与工艺笔记（包括但不限于 `AGENTS.md`、`ROUTER.md`、
+`docs/`、`recipes/`、`motions/_template/`、`apps/recruit-site/*.md`、`README.md`）
+采用 Creative Commons 署名 4.0 国际许可协议（CC BY 4.0）授权。
+
+你可以自由地共享（以任何媒介或格式复制、发行）与改编（重混、转换、基于本作品创作），
+包括商业目的，只要给出适当的署名、提供许可协议链接，并说明是否作出了修改。
+
+许可协议全文：
+https://creativecommons.org/licenses/by/4.0/legalcode.zh-hans
+
+署名建议写法：
+
+  Based on "前端与动效工作台" (2026), licensed under CC BY 4.0.
+  https://github.com/<owner>/<repo>
+
+注：可执行代码（`apps/` 下的 HTML/JS/MJS/PS1、`packages/` 下的 JSON 等）适用仓库根目录的
+MIT 许可，见 LICENSE。两者不冲突：代码要的是宽松复用，文档要的是署名传播。

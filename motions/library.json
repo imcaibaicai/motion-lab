@@ -1,0 +1,6 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-10-24",
+  "note": "动效资产索引。entries 里只允许出现已落盘的条目目录；字段含义见 schemas/shot-intent.schema.json。真正该天天查的是 status 与 determinism.kind——它们直接回答「现在能不能出片」和「跨栈要不要返工」。",
+  "entries": []
+}

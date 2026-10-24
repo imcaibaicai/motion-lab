@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S3 · 产品影像 — 台式机拆解</title>
+<style>
+  :root{--p:0}
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{background:#08090c;color:#eef1f7;overflow-x:hidden;
+    font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  #glow{position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(ellipse 60% 40% at 62% 42%, rgba(46,60,90,.55), transparent 70%),
+      radial-gradient(ellipse 40% 30% at 30% 82%, rgba(120,60,30,.14), transparent 70%),
+      #08090c}
+  #gl{position:fixed;inset:0;z-index:1;display:block}
+  #vig{position:fixed;inset:0;z-index:2;pointer-events:none;
+    background:radial-gradient(ellipse at 58% 46%,transparent 30%,rgba(4,5,8,.9) 100%)}
+  .scroll{height:320vh;position:relative;z-index:0}
+
+  .copy{position:fixed;left:5vw;top:50%;transform:translateY(-50%);z-index:4;max-width:23ch;pointer-events:none}
+  .eyebrow{font:500 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.34em;
+    color:#7c8aa6;text-transform:uppercase;margin-bottom:20px}
+  .eyebrow b{color:#ff8a4c}
+  h1{font-size:clamp(32px,4.2vw,56px);line-height:1.04;letter-spacing:-.035em;font-weight:800}
+  h1 em{font-style:normal;color:#ff8a4c}
+  .lead{margin-top:18px;font-size:13.5px;line-height:1.9;color:#9aa6bd}
+  .spec{margin-top:26px;display:grid;gap:7px;
+    font:500 11px/1.5 ui-monospace,Consolas,monospace;color:#6b7791;letter-spacing:.1em}
+  .spec b{color:#cfd8e8;font-weight:500}
+
+  .labels{position:fixed;inset:0;z-index:3;pointer-events:none}
+  .lb{position:absolute;font:500 10.5px/1 ui-monospace,Consolas,monospace;letter-spacing:.18em;
+    color:#dbe4f5;white-space:nowrap;opacity:0;transform:translate(-50%,-50%);
+    text-shadow:0 1px 10px #000;transition:opacity .2s}
+  .lb u{display:block;text-decoration:none;font-size:9px;color:#77839b;letter-spacing:.1em;
+    margin-top:4px;text-align:center}
+
+  .hud{position:fixed;left:5vw;right:5vw;bottom:24px;z-index:5;display:flex;align-items:center;gap:14px;
+    font:500 10.5px/1 ui-monospace,monospace;letter-spacing:.2em;color:#5c687f}
+  .bar{flex:1;height:1px;background:#1a1f2a;position:relative}
+  .bar i{position:absolute;left:0;top:-1px;height:3px;background:#ff8a4c;width:calc(var(--p) * 100%)}
+  .hint{position:fixed;right:4vw;top:50%;transform:translateY(-50%) rotate(90deg);z-index:5;
+    font:500 10px/1 ui-monospace,monospace;letter-spacing:.36em;color:#3f4a5e}
+  #err{position:fixed;left:5vw;top:20px;z-index:9;max-width:70ch;
+    font:500 12px/1.7 ui-monospace,monospace;color:#ff8f6b;white-space:pre-wrap}
+</style>
+<script type="importmap">
+{ "imports": { "three": "./vendor/three.module.js" } }
+</script>
+</head>
+<body>
+<div id="glow"></div>
+<canvas id="gl"></canvas>
+<div id="vig"></div>
+<div class="labels" id="labels"></div>
+<div class="scroll"></div>
+
+<div class="copy">
+  <div class="eyebrow">SEC.02 &nbsp;/&nbsp; <b>相对</b> ASSEMBLY</div>
+  <h1>每一件<em>都有理由</em></h1>
+  <p class="lead">滚下去，零件按顺序退开。你会看懂它为什么这么装。</p>
+  <div class="spec">
+    <span><b>CPU</b> · 散热与供电顺序</span>
+    <span><b>内存</b> · 双通道为什么成对</span>
+    <span><b>显卡</b> · 长度与风道</span>
+    <span><b>电源</b> · 瓦数怎么算</span>
+  </div>
+</div>
+
+<div class="hint">SCROLL</div>
+<div class="hud">
+  <span id="pct">000%</span><span class="bar"><i></i></span><span>S3 / PRODUCT FILM</span>
+</div>
+<div id="err"></div>
+
+<script type="module">
+const errBox = document.getElementById('err');
+let THREE;
+try { THREE = await import('three'); }
+catch(e){ errBox.textContent = 'import three 失败: ' + e.message; throw e; }
+
+const canvas = document.getElementById('gl');
+let renderer;
+try { renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true }); }
+catch(e){ errBox.textContent = 'WebGLRenderer 失败: ' + e.message; throw e; }
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.1;
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(38, innerWidth/innerHeight, 0.5, 3000);
+
+// ---------- 灯光 ----------
+const key = new THREE.DirectionalLight(0xffe6cf, 4.4); key.position.set(40, 48, 42); scene.add(key);
+const rim = new THREE.DirectionalLight(0x9dc0ff, 3.4); rim.position.set(-48, 24, -42); scene.add(rim);
+const fill = new THREE.DirectionalLight(0xc9d8ff, 1.6); fill.position.set(-22, -32, 32); scene.add(fill);
+scene.add(new THREE.HemisphereLight(0x4a5878, 0x12151c, 2.2));
+const under = new THREE.PointLight(0xff7a3c, 22, 180, 2); under.position.set(-8, -30, 12); scene.add(under);
+
+// ---------- 材质 ----------
+const M = {
+  panel: new THREE.MeshStandardMaterial({ color:0xa9c2e0, metalness:.2, roughness:.06,
+                                          transparent:true, opacity:.15 }),
+  board: new THREE.MeshStandardMaterial({ color:0x24391f, metalness:.15, roughness:.78 }),
+  hot:   new THREE.MeshStandardMaterial({ color:0xc0562a, metalness:.62, roughness:.4 }),
+  chip:  new THREE.MeshStandardMaterial({ color:0xa8b0bb, metalness:.72, roughness:.28 }),
+  fan:   new THREE.MeshStandardMaterial({ color:0x343a45, metalness:.5, roughness:.52 }),
+  dark:  new THREE.MeshStandardMaterial({ color:0x333a45, metalness:.35, roughness:.5 })
+};
+const EDGE = new THREE.LineBasicMaterial({ color:0x6f839f, transparent:true, opacity:.34 });
+
+const parts = [];
+
+function add(name, geo, mat, pos, expl, delay){
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.position.set(pos[0], pos[1], pos[2]);
+  scene.add(mesh);
+  const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geo, 24), EDGE);
+  mesh.add(edges);
+  parts.push({
+    name, obj: mesh,
+    base: new THREE.Vector3(pos[0], pos[1], pos[2]),
+    expl: new THREE.Vector3(expl[0], expl[1], expl[2]),
+    delay
+  });
+  return mesh;
+}
+
+// 机箱：不画实体内壁（会把整个画面压暗），只留一圈极淡的轮廓提示
+{
+  const shellGeo = new THREE.BoxGeometry(20, 46, 42);
+  const shellLines = new THREE.LineSegments(
+    new THREE.EdgesGeometry(shellGeo),
+    new THREE.LineBasicMaterial({ color:0x4a5a72, transparent:true, opacity:.30 })
+  );
+  scene.add(shellLines);
+}
+
+// 侧板（玻璃）：最先退开
+add('侧板', new THREE.BoxGeometry(0.5, 44, 40), M.panel, [10, 0, 0], [16, 0, 0], 0.02);
+
+// 主板
+add('主板', new THREE.BoxGeometry(0.6, 34, 30), M.board, [-9.4, 1, 0], [-13, 0, 0], 0.08);
+
+// CPU 与塔式散热
+const cooler = new THREE.Group();
+const fin = new THREE.BoxGeometry(10.5, 0.7, 10.5);
+for (let i = 0; i < 16; i++){
+  const f = new THREE.Mesh(fin, M.chip);
+  f.position.set(0, i * 1.05 - 7.9, 0);
+  cooler.add(f);
+}
+cooler.position.set(-5.0, 8, -2);
+scene.add(cooler);
+parts.push({ name:'散热器', obj:cooler, base:new THREE.Vector3(-5.0, 8, -2),
+             expl:new THREE.Vector3(-9, 7, 0), delay:0.16 });
+
+add('CPU', new THREE.BoxGeometry(4.6, 0.5, 4.6), M.chip, [-8.6, 2.6, -2], [-7, 4, 0], 0.22);
+
+// 内存 ×2
+add('内存 A', new THREE.BoxGeometry(0.9, 13, 1.5), M.dark, [-8.5, 5, 2.2], [-9, 5, 3.4], 0.28);
+add('内存 B', new THREE.BoxGeometry(0.9, 13, 1.5), M.dark, [-8.5, 5, 4.4], [-9, 5, 5.6], 0.31);
+
+// 显卡
+add('显卡', new THREE.BoxGeometry(26, 4.6, 11), M.dark, [-2, 0.6, -5], [0, 0, 17], 0.36);
+
+// 电源
+add('电源', new THREE.BoxGeometry(15, 8.6, 16), M.dark, [0, -17.6, 2], [-4, -13, 3], 0.42);
+
+// 前置风扇 ×3
+for (let i = 0; i < 3; i++){
+  const ring = add('风扇', new THREE.TorusGeometry(4.3, 0.42, 8, 40), M.fan,
+    [8.7, 9 - i * 9.6, 0], [15, 0, 0], 0.46 + i * 0.03);
+  ring.rotation.y = Math.PI / 2;
+}
+
+// ---------- 标签 ----------
+const SPECS = {
+  '侧板': '钢化玻璃', '主板': 'B760', '散热器': '双塔六热管',
+  '显卡': '三风扇 2.5 槽', '电源': '750W 金牌'
+};
+const labelsEl = document.getElementById('labels');
+const labelEls = new Map();
+for (const n of ['侧板','主板','散热器','显卡','电源']){
+  const d = document.createElement('div');
+  d.className = 'lb';
+  d.innerHTML = n + '<u>' + (SPECS[n] || '') + '</u>';
+  labelsEl.appendChild(d);
+  labelEls.set(n, d);
+}
+
+// ---------- 进度 ----------
+const forced = new URLSearchParams(location.search).get('t');
+const FORCED = forced === null ? null : Math.min(1, Math.max(0, parseFloat(forced) || 0));
+let target = 0, cur = 0;
+function measure(){
+  const max = document.documentElement.scrollHeight - innerHeight;
+  target = max > 0 ? Math.min(1, Math.max(0, scrollY / max)) : 0;
+}
+
+const pctEl = document.getElementById('pct');
+const v3 = new THREE.Vector3();
+const smooth = q => q * q * (3 - 2 * q);
+
+function place(p){
+  for (const it of parts){
+    const q = Math.max(0, Math.min(1, (p - it.delay) / (1 - it.delay)));
+    it.obj.position.copy(it.base).addScaledVector(it.expl, smooth(q));
+  }
+  camera.position.set(56 + p * 18, 30 + p * 8, 74 + p * 30);
+  camera.lookAt(0, 0.5, 0);
+  camera.updateMatrixWorld();
+
+  for (const [name, el] of labelEls){
+    const it = parts.find(x => x.name === name);
+    if (!it) continue;
+    v3.copy(it.obj.position).project(camera);
+    el.style.left = ((v3.x * 0.5 + 0.5) * innerWidth) + 'px';
+    el.style.top = ((0.5 - v3.y * 0.5) * innerHeight - 26) + 'px';
+    el.style.opacity = String(Math.max(0, Math.min(1, (p - it.delay - 0.1) / 0.3)));
+  }
+}
+
+function draw(){
+  const p = FORCED !== null ? FORCED : cur;
+  place(p);
+  renderer.render(scene, camera);
+  pctEl.textContent = String(Math.round(p * 100)).padStart(3, '0') + '%';
+  document.documentElement.style.setProperty('--p', p.toFixed(4));
+}
+
+addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+
+measure(); cur = target;
+addEventListener('scroll', measure, { passive: true });
+
+// 持续渲染：无头截图必须保证合成器能拿到最新一帧
+(function loop(){
+  if (FORCED === null){
+    cur += (target - cur) * 0.12;
+    if (Math.abs(target - cur) < 1e-4) cur = target;
+  }
+  draw();
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
