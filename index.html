@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#05070d">
+  <meta name="description" content="示例社团招新互动原型：用一镜到底的台式机拆解，认识装机、选购与互助。">
+  <title>示例社团 · 把问题拆开看看</title>
+  <link rel="stylesheet" href="./styles.css">
+  <style>html,body{margin:0;background:#05070d;color:#e8eefb}</style>
+  <script type="importmap">{ "imports": { "three": "./vendor/three.module.js" } }</script>
+</head>
+<body>
+  <a class="skip-link" href="#static-content">跳到静态正文</a>
+  <div id="fallback-notice" class="fallback-notice" role="status" hidden></div>
+
+  <div id="experience">
+    <div class="scroll-track" id="scroll-track">
+      <section class="stage" id="stage" aria-label="台式机七幕互动拆解">
+        <div class="ambient" aria-hidden="true"></div>
+        <div class="blueprint-grid" aria-hidden="true"></div>
+        <canvas id="gl" aria-hidden="true"></canvas>
+        <div class="blueprint-overlay" aria-hidden="true"><span class="fig-label">FIG.03 / EXPLODED VIEW</span><span class="scale-label">ATX · 1 UNIT ≈ 1 CM</span><i></i><i></i><i></i><i></i></div>
+        <div class="vignette" aria-hidden="true"></div>
+
+        <div class="boot" id="boot" role="status" aria-label="正在准备三维场景">
+          <div class="boot-machine" aria-hidden="true"><i></i><i></i><i></i></div>
+          <span>ASSEMBLING / 正在装配</span>
+        </div>
+
+        <header class="site-header">
+          <a class="wordmark" href="#" aria-label="回到序章"><b>DC</b><span>DEMO CLUB<small>示例社团 · 互动原型</small></span></a>
+          <span class="draft-badge">CONTENT DRAFT / 信息待确认</span>
+        </header>
+
+        <div id="labels" class="labels" aria-hidden="true"></div>
+        <div id="copy" class="copy-layer">
+          <article class="copy-panel" data-scene="a0" style="opacity:1;visibility:visible" aria-hidden="false">
+            <div class="copy-topline"><span class="eyebrow">DEMO CLUB / 招新</span><span class="scene-index">00</span></div>
+            <h1 class="scene-title">示例社团</h1>
+            <p class="scene-lead">从一台机器开始，认识一群愿意把问题拆开的人。</p>
+            <p class="scene-meta">某校 · 创始年份待确认</p>
+          </article>
+        </div>
+
+        <nav class="chapter-rail" id="chapter-rail" aria-label="七幕目录">
+          <button type="button" data-jump="0" aria-label="序章"><span>00</span><i></i></button>
+          <button type="button" data-jump="1" aria-label="打开"><span>01</span><i></i></button>
+          <button type="button" data-jump="2" aria-label="拆解"><span>02</span><i></i></button>
+          <button type="button" data-jump="3" aria-label="图纸"><span>03</span><i></i></button>
+          <button type="button" data-jump="4" aria-label="现实"><span>04</span><i></i></button>
+          <button type="button" data-jump="5" aria-label="我们"><span>05</span><i></i></button>
+          <button type="button" data-jump="6" aria-label="加入"><span>06</span><i></i></button>
+        </nav>
+
+        <aside class="join-card" id="join-card" aria-label="加入示例社团" aria-hidden="true">
+          <div class="join-card-head"><span>JOIN THE BENCH</span><b>07 / 2026</b></div>
+          <img id="qr-placeholder" src="./assets/qr-placeholder.svg" width="160" height="160" alt="二维码占位图，正式二维码待提供，当前不可扫码">
+          <div class="join-copy"><strong>带上好奇心就够了</strong><span>正式群二维码待提供</span></div>
+          <div class="join-actions">
+            <button type="button" class="primary" id="show-qr">查看二维码</button>
+            <button type="button" id="show-activities">活动安排</button>
+            <button type="button" disabled title="联系方式待提供">联系方式待提供</button>
+          </div>
+        </aside>
+
+        <aside class="part-card" id="part-card" aria-live="polite" aria-hidden="true">
+          <button type="button" class="part-card-close" id="part-card-close" aria-label="关闭零件说明">×</button>
+          <span class="part-card-index" id="part-card-index">—</span>
+          <strong id="part-card-name"></strong>
+          <small id="part-card-spec"></small>
+        </aside>
+
+        <dialog class="qr-dialog" id="qr-dialog" aria-labelledby="qr-dialog-title">
+          <button type="button" class="qr-dialog-close" id="qr-dialog-close" aria-label="关闭二维码">×</button>
+          <h2 id="qr-dialog-title">正式二维码待提供</h2>
+          <img src="./assets/qr-placeholder.svg" width="240" height="240" alt="二维码占位图，不可扫码，正式群二维码待提供">
+          <p>这是占位图，扫不出群。拿到正式二维码后替换 <code>assets/</code> 下的同名文件即可，页面结构不用改。</p>
+        </dialog>
+
+        <button class="scroll-cue" id="scroll-cue" type="button" aria-label="滚动到第一幕">
+          <span>SCROLL TO EXPLORE</span><i aria-hidden="true"></i>
+        </button>
+
+        <footer class="hud">
+          <span class="hud-pct" id="pct">000%</span>
+          <span class="hud-track" aria-hidden="true"><i></i></span>
+          <span class="hud-scene" id="hud-scene">00 / PROLOGUE</span>
+          <span class="hud-tech">ONE SCENE · 12 PARTS</span>
+        </footer>
+      </section>
+    </div>
+  </div>
+
+  <main id="static-content" class="static-content">
+    <p class="static-kicker">STATIC EDITION / 完整静态版</p>
+    <h1>示例社团：把问题拆开看看</h1>
+    <p>这是无需 WebGL 也能阅读的七幕版本。社团名称、年份、活动与联系方式目前均为待确认演示内容。</p>
+    <section id="static-a0"><span>00 / 序章</span><h2>示例社团</h2><p>从一台机器开始，认识一群愿意把问题拆开的人。某校，创始年份待确认。</p></section>
+    <section id="static-a1"><span>01 / 打开</span><h2>把它拆开看看</h2><p>这台机器里的每一个零件，都在决定它值不值这个价。</p></section>
+    <section id="static-a2"><span>02 / 装机</span><h2>我们真的动手</h2><p>整机装配、常见故障排错、工具与防静电、走线，均为待确认的示例活动条目。</p></section>
+    <section id="static-a3"><span>03 / 参数</span><h2>参数不是玄学</h2><p>看懂 CPU 与整机差价、B760 和 Z790 的定位、电源瓦数；当前规范为 ATX 3.1 与 12V-2x6。</p></section>
+    <section id="static-a4"><span>04 / 现实</span><h2>今年，存储是真的贵</h2><p>内存和固态涨价会卡住第一台机器的预算。我们帮你分清哪些钱必须花、哪些可以等，以及旧零件哪些还能用。</p></section>
+    <section id="static-a5"><span>05 / 我们</span><h2>一个人装机，一群人排错</h2><p>不懂就问。把问题带来，把机器带来，空手来也可以。成员方向与活动频次待社团确认。</p></section>
+    <section id="static-a6"><span>06 / 加入</span><h2>九月，机箱旁边见</h2><p>团队寄语、正式群二维码和联系方式待提供。本页占位二维码不可扫描，不能直接作为上线版本。</p></section>
+  </main>
+
+  <noscript><style>#experience{display:none}.static-content{display:block}</style></noscript>
+  <output id="diagnostics" hidden></output>
+  <script type="module">
+    import('./src/main.js').catch((error) => {
+      document.documentElement.classList.add('static-mode');
+      const notice = document.getElementById('fallback-notice');
+      notice.hidden = false;
+      notice.textContent = `已显示静态完整版：三维模块加载失败（${error.message}）。`;
+      console.error(error);
+    });
+  </script>
+</body>
+</html>
